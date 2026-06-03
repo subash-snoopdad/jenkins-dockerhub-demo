@@ -1,0 +1,33 @@
+pipeline {
+  agent any
+
+  environment {
+    IMAGE_NAME = "subashbhaaji/jenkins-docker-demo"
+  }
+
+  stages {
+    stage('Build') {
+      steps {
+        sh 'docker build -t $IMAGE_NAME:$BUILD_NUMBER .'
+      }
+    }
+
+    stage('Push') {
+      steps {
+        withCredentials([
+          usernamePassword(
+            credentialsId: 'dockerhub-creditentials',
+            usernameVariable: 'subashbhaaji',
+            passwordVariable: 'Subash@001'
+          )
+        ]) {
+           sh '''
+           echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+           docker push $IMAGE_NAME:$BUILD_NUMBER
+           '''
+      
+    }
+  }
+}
+ }
+ }
